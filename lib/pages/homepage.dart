@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_list_app/services/auth_service.dart';
 
 void main() {
   runApp(const MaterialApp(title: "Lista de Tarefas", home: Home()));
@@ -30,50 +32,60 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void logout() async {
+    await context.read<AuthService>().logout();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Scaffold screen = Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: addTodo,
-        child: const Icon(Icons.add),
-      ),
-      appBar: AppBar(
-        title: const Text("Lista de Tarefas"),
-        backgroundColor: Colors.blueAccent,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.fromLTRB(17.0, 1.0, 7.0, 1.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _todoController,
-                    decoration: const InputDecoration(
-                      labelText: "Nova Tarefa",
-                      labelStyle: TextStyle(color: Colors.blueAccent),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Lista de Tarefas"),
+          actions: [
+            GestureDetector(
+              onTap: logout,
+              child: const Icon(Icons.exit_to_app),
+            ),
+          ],
+          backgroundColor: Colors.blueAccent,
+          centerTitle: true,
+        ),
+        body: Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.fromLTRB(17.0, 1.0, 7.0, 1.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _todoController,
+                      decoration: const InputDecoration(
+                        labelText: "Nova Tarefa",
+                        labelStyle: TextStyle(color: Colors.blueAccent),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  ElevatedButton(
+                    child: const Text("ADD"),
+                    onPressed: addTodo,
+                  )
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView.builder(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  itemCount: _todoList.length,
-                  itemBuilder: buildItem),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _refresh,
+                child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    itemCount: _todoList.length,
+                    itemBuilder: buildItem),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
-
-    return screen;
   }
 
   Widget buildItem(context, index) {
