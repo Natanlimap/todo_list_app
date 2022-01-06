@@ -10,7 +10,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final formkey = GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
+  final _messangerKey = GlobalKey<ScaffoldMessengerState>();
+
   final email = TextEditingController();
   final password = TextEditingController();
   bool isLogin = true;
@@ -38,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
           .read<AuthService>()
           .login(email: email.text, password: password.text);
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context)
+      _messangerKey.currentState!
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
@@ -49,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
           .read<AuthService>()
           .register(email: email.text, password: password.text);
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context)
+      _messangerKey.currentState!
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
@@ -75,63 +77,68 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        scaffoldMessengerKey: _messangerKey,
         home: Scaffold(
             body: SingleChildScrollView(
                 child: Padding(
-      padding: const EdgeInsets.only(top: 200),
-      child: Form(
-          key: formkey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 40,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -1.5),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), labelText: "Email"),
-                  controller: email,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), labelText: "Password"),
-                  controller: password,
-                  obscureText: true,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextButton(
-                    style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.symmetric(vertical: 14)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red)),
-                    onPressed: submit,
-                    child: Text(
-                      buttonText,
-                      style: const TextStyle(color: Colors.white),
-                    )),
-              ),
-              TextButton(
-                  onPressed: actionButton,
-                  child: Text(
-                    actionText,
-                    style: const TextStyle(color: Colors.black),
-                  )),
-            ],
-          )),
-    ))));
+          padding: const EdgeInsets.only(top: 200),
+          child: Form(
+              key: _formkey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.5),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                          labelStyle: TextStyle(color: Colors.red),
+                          border: OutlineInputBorder(),
+                          labelText: "Email"),
+                      controller: email,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                          labelStyle: TextStyle(color: Colors.red),
+                          border: OutlineInputBorder(),
+                          labelText: "Password"),
+                      controller: password,
+                      obscureText: true,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TextButton(
+                        style: ButtonStyle(
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 14)),
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.red)),
+                        onPressed: submit,
+                        child: Text(
+                          buttonText,
+                          style: const TextStyle(color: Colors.white),
+                        )),
+                  ),
+                  TextButton(
+                      onPressed: actionButton,
+                      child: Text(
+                        actionText,
+                        style: const TextStyle(color: Colors.black),
+                      )),
+                ],
+              )),
+        ))));
   }
 }
